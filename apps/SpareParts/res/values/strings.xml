@@ -65,4 +65,9 @@
     <string name="compatibility_mode_summary_on">Run older apps in Compatibility mode. This require rebooting. </string>
     <!-- Sound & display settings screen, compatibility mode option summary text when check box is clear -->
     <string name="compatibility_mode_summary_off">Run older apps in Compatibility mode. This require rebooting. </string>
+
+    <string name="memctl_title">Memory Control Settings</string>
+    <string name="dialog_compcache_memctl_state">Compcache/Swap</string>
+    <string name="title_compcache_size">Compcache Size</string>
+    <string name="summary_compcache_size">Change Compcache Size</string>
 </resources>

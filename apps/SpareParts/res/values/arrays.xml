@@ -65,4 +65,21 @@
         <item>2</item>
         <item>3</item>
     </string-array>
+    
+
+    <string-array name="entries_compcache_size">
+        <item>0 (off)</item>
+        <item>10 %</item>
+        <item>20 %</item>
+        <item>30 %</item>
+        <item>50 %</item>
+    </string-array>
+
+    <string-array name="entryvalues_compcache_size">
+        <item>0</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>50</item>
+    </string-array>
 </resources>

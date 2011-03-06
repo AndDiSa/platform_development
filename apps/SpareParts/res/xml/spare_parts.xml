@@ -101,5 +101,18 @@
                 android:summaryOn="@string/compatibility_mode_summary_on"
                 android:summaryOff="@string/compatibility_mode_summary_off" />
     </PreferenceCategory>
+    
+    <PreferenceCategory android:key="performance_settings_category"
+        android:title="@string/memctl_title">
+
+         <ListPreference
+            android:key="persist.system.compcache"
+            android:persistent="true"
+            android:title="@string/title_compcache_size"
+            android:summary="@string/summary_compcache_size"
+            android:entries="@array/entries_compcache_size"
+            android:entryValues="@array/entryvalues_compcache_size"
+            android:dialogTitle="@string/title_compcache_size" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

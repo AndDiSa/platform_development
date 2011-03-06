@@ -28,6 +28,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.preference.PreferenceCategory;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -37,10 +38,12 @@ import android.preference.PreferenceScreen;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.os.Bundle;
+import android.os.SystemProperties;
 import android.util.Log;
 import android.view.IWindowManager;
 
 import java.util.List;
+import java.io.File;
 
 public class SpareParts extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener,
@@ -51,6 +54,9 @@ public class SpareParts extends PreferenceActivity
     private static final String BATTERY_INFORMATION_PREF = "battery_information_settings";
     private static final String USAGE_STATISTICS_PREF = "usage_statistics_settings";
     
+    
+    private static final String PERFORMANCE_SETTINGS_CATEGORY = "performance_settings_category";
+
     private static final String WINDOW_ANIMATIONS_PREF = "window_animations";
     private static final String TRANSITION_ANIMATIONS_PREF = "transition_animations";
     private static final String FANCY_IME_ANIMATIONS_PREF = "fancy_ime_animations";
@@ -58,6 +64,15 @@ public class SpareParts extends PreferenceActivity
     private static final String FONT_SIZE_PREF = "font_size";
     private static final String END_BUTTON_PREF = "end_button";
     private static final String KEY_COMPATIBILITY_MODE = "compatibility_mode";
+    private static final String MEMCTL_STATE_PREF = "memctl_state";
+    private static final String MEMCTL_SIZE_PREF = "memctl_size";
+    private static final String MEMCTL_SWP_PREF = "memctl_swp";
+    
+    private static final String COMPCACHE_PREF = "persist.system.compcache";
+
+    private static final String COMPCACHE_PERSIST_PROP = "persist.service.compcache";
+
+    private static final String COMPCACHE_DEFAULT = SystemProperties.get("ro.compcache.default");
 
     private final Configuration mCurConfig = new Configuration();
     
@@ -68,8 +83,11 @@ public class SpareParts extends PreferenceActivity
     private ListPreference mFontSizePref;
     private ListPreference mEndButtonPref;
     private CheckBoxPreference mCompatibilityMode;
+    private ListPreference mCompcachePref;
 
     private IWindowManager mWindowManager;
+
+    private int swapAvailable = -1;
 
     public static boolean updatePreferenceToSpecificActivityOrRemove(Context context,
             PreferenceGroup parentPreferenceGroup, String preferenceKey, int flags) {
@@ -112,7 +130,8 @@ public class SpareParts extends PreferenceActivity
         addPreferencesFromResource(R.xml.spare_parts);
 
         PreferenceScreen prefSet = getPreferenceScreen();
-        
+        PreferenceCategory pscCategory = (PreferenceCategory)prefSet.findPreference(PERFORMANCE_SETTINGS_CATEGORY);
+
         mWindowAnimationsPref = (ListPreference) prefSet.findPreference(WINDOW_ANIMATIONS_PREF);
         mWindowAnimationsPref.setOnPreferenceChangeListener(this);
         mTransitionAnimationsPref = (ListPreference) prefSet.findPreference(TRANSITION_ANIMATIONS_PREF);
@@ -127,6 +146,18 @@ public class SpareParts extends PreferenceActivity
         mCompatibilityMode.setPersistent(false);
         mCompatibilityMode.setChecked(Settings.System.getInt(getContentResolver(),
                 Settings.System.COMPATIBILITY_MODE, 1) != 0);
+
+        mCompcachePref = (ListPreference) prefSet.findPreference(COMPCACHE_PREF);
+        if (isSwapAvailable()) {
+        	System.out.println(COMPCACHE_PERSIST_PROP + SystemProperties.get(COMPCACHE_PERSIST_PROP));
+        	if (SystemProperties.get(COMPCACHE_PERSIST_PROP) == "1")
+                SystemProperties.set(COMPCACHE_PERSIST_PROP, COMPCACHE_DEFAULT);
+            mCompcachePref.setValue(SystemProperties.get(COMPCACHE_PERSIST_PROP, COMPCACHE_DEFAULT));
+        	System.out.println(COMPCACHE_PERSIST_PROP + SystemProperties.get(COMPCACHE_PERSIST_PROP, COMPCACHE_DEFAULT));
+            mCompcachePref.setOnPreferenceChangeListener(this);
+        } else {
+            pscCategory.removePreference(mCompcachePref);
+        }
 
         mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
         
@@ -159,7 +190,15 @@ public class SpareParts extends PreferenceActivity
             writeFontSizePreference(objValue);
         } else if (preference == mEndButtonPref) {
             writeEndButtonPreference(objValue);
+        } else if (preference == mCompcachePref) {
+            if (objValue != null) {
+                SystemProperties.set(COMPCACHE_PERSIST_PROP, (String)objValue);
+            	System.out.println(COMPCACHE_PERSIST_PROP + (String)objValue);
+                return true;
+            }
         }
+
+
         // always let the preference setting proceed.
         return true;
     }
@@ -240,7 +279,7 @@ public class SpareParts extends PreferenceActivity
         } catch (SettingNotFoundException e) {
         }
     }
-    
+
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         if (FANCY_IME_ANIMATIONS_PREF.equals(key)) {
             Settings.System.putInt(getContentResolver(),
@@ -262,4 +301,14 @@ public class SpareParts extends PreferenceActivity
         readEndButtonPreference(mEndButtonPref);
         updateToggles();
     }
+    
+    /**
+    * Check if swap support is available on the system
+    */
+        private boolean isSwapAvailable() {
+            if (swapAvailable < 0) {
+                swapAvailable = new File("/proc/swaps").exists() ? 1 : 0;
+            }
+            return swapAvailable > 0;
+        }
 }
