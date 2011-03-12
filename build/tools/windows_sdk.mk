@@ -22,16 +22,18 @@ ifeq ($(strip $(shell which unix2dos todos 2>/dev/null)),)
 $(error Need a unix2dos command. Please 'apt-get install tofrodos')
 endif
 
+include $(TOPDIR)sdk/build/windows_sdk_tools.mk
+
 WIN_TARGETS := \
 	aapt adb aidl \
-	emulator etc1tool \
+	etc1tool \
 	dexdump dmtracedump \
 	fastboot \
 	hprof-conv \
-	mksdcard \
 	prebuilt \
-	sdklauncher sqlite3 \
-	zipalign
+	sqlite3 \
+	zipalign \
+	$(WIN_SDK_TARGETS)
 
 # LINUX_SDK_NAME/DIR is set in build/core/Makefile
 WIN_SDK_NAME  := $(subst $(HOST_OS)-$(HOST_ARCH),windows,$(LINUX_SDK_NAME))
@@ -60,7 +62,7 @@ win_sdk: $(WIN_SDK_ZIP)
 
 winsdk-tools: acp
 	$(call winsdk-banner,Build Windows Tools)
-	$(hide) USE_MINGW=1 $(MAKE) PRODUCT-$(TARGET_PRODUCT)-$(strip $(WIN_TARGETS))
+	$(hide) USE_MINGW=1 $(MAKE) PRODUCT-$(TARGET_PRODUCT)-$(strip $(WIN_TARGETS)) $(if $(hide),,showcommands)
 
 $(WIN_SDK_ZIP): winsdk-tools sdk
 	$(call winsdk-banner,Build $(WIN_SDK_NAME))
@@ -69,8 +71,13 @@ $(WIN_SDK_ZIP): winsdk-tools sdk
 	$(hide) mkdir -p $(WIN_SDK_DIR)
 	$(hide) cp -rf $(LINUX_SDK_DIR)/$(LINUX_SDK_NAME) $(WIN_SDK_DIR)/$(WIN_SDK_NAME)
 	$(hide) USB_DRIVER_HOOK=$(USB_DRIVER_HOOK) \
-		$(TOPDIR)development/build/tools/patch_windows_sdk.sh \
-		$(subst @,-q,$(hide)) \
+		$(TOPDIR)development/build/tools/patch_windows_sdk.sh $(subst @,-q,$(hide)) \
+		$(WIN_SDK_DIR)/$(WIN_SDK_NAME) $(OUT_DIR) $(TOPDIR)
+	# TODO remove test once llvm-rs-cc is merged
+	$(hide) if [ -f $(WIN_SDK_DIR)/$(WIN_SDK_NAME)/platform-tools/llvm-rs-cc.exe ]; then \
+			strip --strip-all $(WIN_SDK_DIR)/$(WIN_SDK_NAME)/platform-tools/llvm-rs-cc.exe; \
+		fi
+	$(hide) $(TOPDIR)sdk/build/patch_windows_sdk.sh $(subst @,-q,$(hide)) \
 		$(WIN_SDK_DIR)/$(WIN_SDK_NAME) $(OUT_DIR) $(TOPDIR)
 	$(hide) ( \
 		cd $(WIN_SDK_DIR) && \

@@ -337,9 +337,9 @@ public class Monkey {
                 synchronized (Monkey.this) {
                     mAbort = true;
                 }
-                return (mKillProcessAfterError) ? -1 : 1;
+                return (mKillProcessAfterError) ? -1 : 0;
             }
-            return 1;
+            return 0;
         }
     }
 
@@ -981,6 +981,9 @@ public class Monkey {
         int eventCounter = 0;
         int cycleCounter = 0;
 
+        boolean shouldReportAnrTraces = false;
+        boolean shouldReportDumpsysMemInfo = false;
+        boolean shouldAbort = false;
         boolean systemCrashed = false;
 
         // TO DO : The count should apply to each of the script file.
@@ -991,8 +994,8 @@ public class Monkey {
                     mRequestProcRank = false;
                 }
                 if (mRequestAnrTraces) {
-                    reportAnrTraces();
                     mRequestAnrTraces = false;
+                    shouldReportAnrTraces = true;
                 }
                 if (mRequestAnrBugreport){
                     getBugreport("anr_" + mReportProcessName + "_");
@@ -1003,8 +1006,8 @@ public class Monkey {
                     mRequestAnrBugreport = false;
                 }
                 if (mRequestDumpsysMemInfo) {
-                    reportDumpsysMemInfo();
                     mRequestDumpsysMemInfo = false;
+                    shouldReportDumpsysMemInfo = true;
                 }
                 if (mMonitorNativeCrashes) {
                     // first time through, when eventCounter == 0, just set up
@@ -1018,10 +1021,27 @@ public class Monkey {
                     }
                 }
                 if (mAbort) {
-                    System.out.println("** Monkey aborted due to error.");
-                    System.out.println("Events injected: " + eventCounter);
-                    return eventCounter;
+                    shouldAbort = true;
                 }
+            }
+
+            // Report ANR, dumpsys after releasing lock on this.
+            // This ensures the availability of the lock to Activity controller's appNotResponding
+            if (shouldReportAnrTraces) {
+               shouldReportAnrTraces = false;
+               reportAnrTraces();
+            }
+
+            if (shouldReportDumpsysMemInfo) {
+               shouldReportDumpsysMemInfo = false;
+               reportDumpsysMemInfo();
+            }
+
+            if (shouldAbort) {
+               shouldAbort = false;
+               System.out.println("** Monkey aborted due to error.");
+               System.out.println("Events injected: " + eventCounter);
+               return eventCounter;
             }
 
             // In this debugging mode, we never send any events. This is
