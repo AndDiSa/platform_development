@@ -74,6 +74,24 @@ public class SpareParts extends PreferenceActivity
 
     private static final String COMPCACHE_DEFAULT = SystemProperties.get("ro.compcache.default");
 
+    private static final String JIT_PREF = "pref_jit_mode";
+
+    private static final String JIT_ENABLED = "int:jit";
+
+    private static final String JIT_DISABLED = "int:fast";
+
+    private static final String JIT_PERSIST_PROP = "persist.sys.jit-mode";
+
+    private static final String JIT_PROP = "dalvik.vm.execution-mode";
+  
+    private static final String HEAPSIZE_PREF = "pref_heapsize";
+
+    private static final String HEAPSIZE_PROP = "dalvik.vm.heapsize";
+
+    private static final String HEAPSIZE_PERSIST_PROP = "persist.sys.vm.heapsize";
+
+    private static final String HEAPSIZE_DEFAULT = "16m";
+    
     private final Configuration mCurConfig = new Configuration();
     
     private ListPreference mWindowAnimationsPref;
@@ -84,7 +102,9 @@ public class SpareParts extends PreferenceActivity
     private ListPreference mEndButtonPref;
     private CheckBoxPreference mCompatibilityMode;
     private ListPreference mCompcachePref;
-
+    private CheckBoxPreference mJitPref;
+    private ListPreference mHeapsizePref;
+    
     private IWindowManager mWindowManager;
 
     private int swapAvailable = -1;
@@ -159,6 +179,16 @@ public class SpareParts extends PreferenceActivity
             pscCategory.removePreference(mCompcachePref);
         }
 
+        mJitPref = (CheckBoxPreference) prefSet.findPreference(JIT_PREF);
+        String jitMode = SystemProperties.get(JIT_PERSIST_PROP,
+                SystemProperties.get(JIT_PROP, JIT_ENABLED));
+        mJitPref.setChecked(JIT_ENABLED.equals(jitMode));
+
+        mHeapsizePref = (ListPreference) prefSet.findPreference(HEAPSIZE_PREF);
+        mHeapsizePref.setValue(SystemProperties.get(HEAPSIZE_PERSIST_PROP,
+                SystemProperties.get(HEAPSIZE_PROP, HEAPSIZE_DEFAULT)));
+        mHeapsizePref.setOnPreferenceChangeListener(this);
+        
         mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
         
         final PreferenceGroup parentPreference = getPreferenceScreen();
@@ -196,8 +226,12 @@ public class SpareParts extends PreferenceActivity
             	System.out.println(COMPCACHE_PERSIST_PROP + (String)objValue);
                 return true;
             }
+        } else if (preference == mHeapsizePref) {
+            if (objValue != null) {
+                SystemProperties.set(HEAPSIZE_PERSIST_PROP, (String)objValue);
+                return true;
+            }
         }
-
 
         // always let the preference setting proceed.
         return true;
@@ -205,6 +239,12 @@ public class SpareParts extends PreferenceActivity
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+    	if (preference == mJitPref) {
+            SystemProperties.set(JIT_PERSIST_PROP,
+                    mJitPref.isChecked() ? JIT_ENABLED : JIT_DISABLED);
+            return true;
+        }
+
         if (preference == mCompatibilityMode) {
             Settings.System.putInt(getContentResolver(),
                     Settings.System.COMPATIBILITY_MODE,

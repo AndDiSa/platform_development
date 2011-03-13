@@ -103,7 +103,7 @@
     </PreferenceCategory>
     
     <PreferenceCategory android:key="performance_settings_category"
-        android:title="@string/memctl_title">
+        android:title="@string/perfctl_title">
 
          <ListPreference
             android:key="persist.system.compcache"
@@ -113,6 +113,15 @@
             android:entries="@array/entries_compcache_size"
             android:entryValues="@array/entryvalues_compcache_size"
             android:dialogTitle="@string/title_compcache_size" />
+            
+        <CheckBoxPreference android:key="pref_jit_mode"
+            android:title="@string/pref_jit_mode_title" android:summary="@string/pref_jit_mode_summary" />
+        
+        <ListPreference android:key="pref_heapsize"
+            android:dialogTitle="@string/pref_heapsize_title"
+            android:title="@string/pref_heapsize_title" android:summary="@string/pref_heapsize_summary"
+            android:entries="@array/entries_heapsize"
+            android:entryValues="@array/entries_heapsize" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -66,8 +66,17 @@
     <!-- Sound & display settings screen, compatibility mode option summary text when check box is clear -->
     <string name="compatibility_mode_summary_off">Run older apps in Compatibility mode. This require rebooting. </string>
 
-    <string name="memctl_title">Memory Control Settings</string>
+    <string name="perfctl_title">Performance Settings</string>
     <string name="dialog_compcache_memctl_state">Compcache/Swap</string>
-    <string name="title_compcache_size">Compcache Size</string>
-    <string name="summary_compcache_size">Change Compcache Size</string>
+    <string name="title_compcache_size">Compcache RAM Usage</string>
+    <string name="summary_compcache_size">Compress memory for increased virtual capacity (requires reboot)</string>
+    
+    <!-- Performance Settings : JIT Mode -->
+    <string name="pref_jit_mode_title">Use JIT</string>
+    <string name="pref_jit_mode_summary">Use the Dalvik just-in-time compiler (requires reboot)</string>
+    
+    <!-- Performance Settings : VM Heap Size -->
+    <string name="pref_heapsize_title">VM heap size</string>
+    <string name="pref_heapsize_summary">Maximum amount of memory per VM heap (requires reboot)</string>
+ 
 </resources>
