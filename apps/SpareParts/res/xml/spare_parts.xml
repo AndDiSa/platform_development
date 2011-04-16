@@ -114,6 +114,15 @@
             android:entryValues="@array/entryvalues_compcache_size"
             android:dialogTitle="@string/title_compcache_size" />
             
+         <ListPreference
+            android:key="persist.system.swappiness"
+            android:persistent="true"
+            android:title="@string/title_swappiness"
+            android:summary="@string/summary_swappiness"
+            android:entries="@array/entries_swappiness"
+            android:entryValues="@array/entryvalues_swappiness"
+            android:dialogTitle="@string/title_swappiness" />
+            
         <CheckBoxPreference android:key="pref_jit_mode"
             android:title="@string/pref_jit_mode_title" android:summary="@string/pref_jit_mode_summary" />
         

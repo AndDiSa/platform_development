@@ -74,6 +74,12 @@ public class SpareParts extends PreferenceActivity
 
     private static final String COMPCACHE_DEFAULT = SystemProperties.get("ro.compcache.default");
 
+    private static final String SWAPPINESS_PREF = "persist.system.swappiness";
+
+    private static final String SWAPPINESS_PERSIST_PROP = "persist.service.swappiness";
+
+    private static final String SWAPPINESS_DEFAULT = SystemProperties.get("ro.compcache.swappiness");
+
     private static final String JIT_PREF = "pref_jit_mode";
 
     private static final String JIT_ENABLED = "int:jit";
@@ -102,6 +108,7 @@ public class SpareParts extends PreferenceActivity
     private ListPreference mEndButtonPref;
     private CheckBoxPreference mCompatibilityMode;
     private ListPreference mCompcachePref;
+    private ListPreference mSwappinessPref;
     private CheckBoxPreference mJitPref;
     private ListPreference mHeapsizePref;
     
@@ -179,6 +186,18 @@ public class SpareParts extends PreferenceActivity
             pscCategory.removePreference(mCompcachePref);
         }
 
+        mSwappinessPref = (ListPreference) prefSet.findPreference(SWAPPINESS_PREF);
+        if (isSwapAvailable()) {
+        	System.out.println(SWAPPINESS_PERSIST_PROP + SystemProperties.get(SWAPPINESS_PERSIST_PROP));
+        	if (SystemProperties.get(SWAPPINESS_PERSIST_PROP) == "1")
+                SystemProperties.set(SWAPPINESS_PERSIST_PROP, SWAPPINESS_DEFAULT);
+            mSwappinessPref.setValue(SystemProperties.get(SWAPPINESS_PERSIST_PROP, SWAPPINESS_DEFAULT));
+        	System.out.println(SWAPPINESS_PERSIST_PROP + SystemProperties.get(SWAPPINESS_PERSIST_PROP, SWAPPINESS_DEFAULT));
+            mSwappinessPref.setOnPreferenceChangeListener(this);
+        } else {
+            pscCategory.removePreference(mSwappinessPref);
+        }
+
         mJitPref = (CheckBoxPreference) prefSet.findPreference(JIT_PREF);
         String jitMode = SystemProperties.get(JIT_PERSIST_PROP,
                 SystemProperties.get(JIT_PROP, JIT_ENABLED));
@@ -224,6 +243,12 @@ public class SpareParts extends PreferenceActivity
             if (objValue != null) {
                 SystemProperties.set(COMPCACHE_PERSIST_PROP, (String)objValue);
             	System.out.println(COMPCACHE_PERSIST_PROP + (String)objValue);
+                return true;
+            }
+        } else if (preference == mSwappinessPref) {
+            if (objValue != null) {
+                SystemProperties.set(SWAPPINESS_PERSIST_PROP, (String)objValue);
+            	System.out.println(SWAPPINESS_PERSIST_PROP + (String)objValue);
                 return true;
             }
         } else if (preference == mHeapsizePref) {

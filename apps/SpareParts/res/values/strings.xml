@@ -70,6 +70,8 @@
     <string name="dialog_compcache_memctl_state">Compcache/Swap</string>
     <string name="title_compcache_size">Compcache RAM Usage</string>
     <string name="summary_compcache_size">Compress memory for increased virtual capacity (requires reboot)</string>
+    <string name="title_swappiness">Swappiness for Compcache</string>
+    <string name="summary_swappiness">Defines how agressive memory is swapped in / out (requires reboot)</string>
     
     <!-- Performance Settings : JIT Mode -->
     <string name="pref_jit_mode_title">Use JIT</string>
