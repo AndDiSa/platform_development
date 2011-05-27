@@ -70,15 +70,15 @@ public class SpareParts extends PreferenceActivity
     
     private static final String COMPCACHE_PREF = "persist.system.compcache";
 
-    private static final String COMPCACHE_PERSIST_PROP = "persist.service.compcache";
+    private static final String COMPCACHE_PERSIST_PROP = "persist.zram.size";
 
-    private static final String COMPCACHE_DEFAULT = SystemProperties.get("ro.compcache.default");
+    private static final String COMPCACHE_DEFAULT = SystemProperties.get("ro.zram.default");
 
     private static final String SWAPPINESS_PREF = "persist.system.swappiness";
 
     private static final String SWAPPINESS_PERSIST_PROP = "persist.service.swappiness";
 
-    private static final String SWAPPINESS_DEFAULT = SystemProperties.get("ro.compcache.swappiness");
+    private static final String SWAPPINESS_DEFAULT = SystemProperties.get("ro.zram.swappiness");
 
     private static final String JIT_PREF = "pref_jit_mode";
 
@@ -96,7 +96,7 @@ public class SpareParts extends PreferenceActivity
 
     private static final String HEAPSIZE_PERSIST_PROP = "persist.sys.vm.heapsize";
 
-    private static final String HEAPSIZE_DEFAULT = "16m";
+    private static final String HEAPSIZE_DEFAULT = "18m";
     
     private final Configuration mCurConfig = new Configuration();
     

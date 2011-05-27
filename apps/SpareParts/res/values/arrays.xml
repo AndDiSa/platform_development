@@ -69,18 +69,20 @@
 
     <string-array name="entries_compcache_size">
         <item>0 (off)</item>
-        <item>10 %</item>
-        <item>20 %</item>
-        <item>30 %</item>
-        <item>50 %</item>
+        <item>8 MB</item>
+        <item>12 MB</item>
+        <item>16 MB</item>
+        <item>20 MB</item>
+        <item>24 MB</item>
     </string-array>
 
     <string-array name="entryvalues_compcache_size">
         <item>0</item>
-        <item>10</item>
+        <item>8</item>
+        <item>12</item>
+        <item>16</item>
         <item>20</item>
-        <item>30</item>
-        <item>50</item>
+        <item>24</item>
     </string-array>
     
     <string-array name="entries_swappiness">
@@ -88,8 +90,8 @@
         <item>10</item>
         <item>15</item>
         <item>20</item>
+        <item>25</item>
         <item>30</item>
-        <item>40</item>
     </string-array>
 
     <string-array name="entryvalues_swappiness">
@@ -97,13 +99,14 @@
         <item>10</item>
         <item>15</item>
         <item>20</item>
+        <item>25</item>
         <item>30</item>
-        <item>40</item>
     </string-array>
 
     <string-array name="entries_heapsize">
         <item>12m</item>
         <item>16m</item>
+        <item>18m</item>
         <item>24m</item>
         <item>32m</item>
     </string-array>
