@@ -17,7 +17,6 @@ LOCAL_PATH := $(call my-dir)
 
 # Target executable
 # TODO: Requires libelf for target
-
 #include $(CLEAR_VARS)
 #LOCAL_MODULE := $(module)
 #LOCAL_SRC_FILES := $(src_files)
@@ -33,6 +32,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := elftree
+LOCAL_MODULE_TAGS := optional
 LOCAL_SRC_FILES := elftree.c
 LOCAL_C_INCLUDES := external/elfutils/libelf
 LOCAL_STATIC_LIBRARIES := libelf
